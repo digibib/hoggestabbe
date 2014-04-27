@@ -154,6 +154,7 @@ func main() {
 					os.Exit(1)
 				}
 				count = count + 1
+				fmt.Printf("%d records processed\r", count)
 				if count == *maxRecords {
 					break
 				}
