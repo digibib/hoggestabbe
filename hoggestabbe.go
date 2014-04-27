@@ -34,10 +34,14 @@ type subField struct {
 	Value string `xml:",innerxml"`
 }
 
+// Default status for records missing a status for leader position 5
+const DefaultStatus = "n"
+
 func Parse(lines []string) (MarcRecord, error) {
 	size := 24 // size of leader is 24 chars
 	r := MarcRecord{}
-
+	var ctrl cField
+	var status string // for leader, position 5
 	for _, line := range lines {
 		if !strings.HasPrefix(line, "*") {
 			println("cannot parse this line", line)
@@ -48,7 +52,11 @@ func Parse(lines []string) (MarcRecord, error) {
 		size = size + len(line)
 
 		if strings.HasPrefix(line, "*00") {
-			r.CtrlFields = append(r.CtrlFields, parseCtrlField(line))
+			ctrl = parseCtrlField(line)
+			if ctrl.Tag == "000" {
+				status = ctrl.Field
+			}
+			r.CtrlFields = append(r.CtrlFields, ctrl)
 		} else {
 			tag := line[1:4]
 			ind1 := line[4:5]
@@ -64,22 +72,32 @@ func Parse(lines []string) (MarcRecord, error) {
 			r.DataFields = append(r.DataFields, dField{tag, ind1, ind2, subFields})
 		}
 	}
-
-	// TODO leader, ex:
-	// 00728nam a2200217   4500
-	//r.Leader = fmt.Sprintf("%05dnam a2200217   4500", size)
+	if status == "" {
+		status = DefaultStatus
+	}
+	r.Leader = fmt.Sprintf("%05d%sam a22     1  4500", size, status)
 	return r, nil
 }
 
 func parseCtrlField(line string) cField {
 	tag := line[1:4]
 	var v string
-	if tag == "008" {
+	switch tag {
+	case "000":
+		// make sure we have a character in position 5, if not
+		// set the default status
+		if len(line) < 5 || line[5:6] == " " {
+			v = DefaultStatus
+		} else {
+			v = line[5:6]
+		}
+	case "008":
 		// make sure field 008 has excactly 40 characters
 		v = fmt.Sprintf("%-40s", line[4:len(line)])
-	} else {
+	default:
 		v = line[4:len(line)]
 	}
+
 	return cField{tag, v}
 }
 

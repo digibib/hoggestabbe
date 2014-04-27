@@ -23,7 +23,7 @@ var marcInput string = `*0010010463
 *850  $aDEICHM$sn`
 
 var xmlOutput string = `<record>
-  <leader></leader>
+  <leader>00573nam a22     1  4500</leader>
   <controlfield tag="001">0010463</controlfield>
   <controlfield tag="008">871001                a          0 nob r</controlfield>
   <datafield tag="015" ind1=" " ind2=" ">
