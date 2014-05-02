@@ -86,10 +86,10 @@ func parseCtrlField(line string) cField {
 	case "000":
 		// make sure we have a character in position 5, if not
 		// set the default status
-		if len(line) < 5 || line[5:6] == " " {
+		if len(line) < 10 || line[9:10] == " " {
 			v = DefaultStatus
 		} else {
-			v = line[5:6]
+			v = line[9:10]
 		}
 	case "008":
 		// make sure field 008 has excactly 40 characters
