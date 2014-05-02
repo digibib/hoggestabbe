@@ -31,11 +31,11 @@ type dField struct {
 
 type subField struct {
 	Code  string `xml:"code,attr"`
-	Value string `xml:",innerxml"`
+	Value string `xml:",chardata"`
 }
 
 // Default status for records missing a status for leader position 5
-const DefaultStatus = "n"
+const DefaultStatus = "c"
 
 func Parse(lines []string) (MarcRecord, error) {
 	size := 24 // size of leader is 24 chars
