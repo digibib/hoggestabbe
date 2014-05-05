@@ -19,7 +19,7 @@ type MarcRecord struct {
 
 type cField struct {
 	Tag   string `xml:"tag,attr"`
-	Field string `xml:",innerxml"`
+	Field string `xml:",chadata"`
 }
 
 type dField struct {
