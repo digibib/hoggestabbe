@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"unicode/utf8"
 )
 
 type MarcRecord struct {
@@ -59,6 +60,11 @@ func Parse(lines []string) (MarcRecord, error) {
 			r.CtrlFields = append(r.CtrlFields, ctrl)
 		} else {
 			tag := line[1:4]
+			if !utf8.FullRuneInString(tag) {
+				fmt.Printf("cannot parse this line: %s", line)
+				fmt.Println("skipping")
+				continue
+			}
 			ind1 := line[4:5]
 			ind2 := line[5:6]
 			subFields := []subField{}
