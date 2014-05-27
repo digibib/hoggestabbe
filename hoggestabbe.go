@@ -60,17 +60,16 @@ func Parse(lines []string) (MarcRecord, error) {
 			r.CtrlFields = append(r.CtrlFields, ctrl)
 		} else {
 			tag := line[1:4]
-			if !utf8.FullRuneInString(tag) {
-				fmt.Printf("cannot parse this line: %s", line)
-				fmt.Println("skipping")
-				continue
-			}
 			ind1 := line[4:5]
 			ind2 := line[5:6]
 			subFields := []subField{}
 			for _, sf := range strings.Split(line[6:len(line)], "$") {
 				if len(sf) == 0 {
 					//println(tag, line)
+					continue
+				}
+				if !utf8.FullRuneInString(sf[0:1]) {
+					fmt.Printf("\nSkipping subfield (unparsable): %s\n", sf)
 					continue
 				}
 				subFields = append(subFields, subField{sf[0:1], sf[1:len(sf)]})
