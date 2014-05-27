@@ -43,6 +43,7 @@ func Parse(lines []string) (MarcRecord, error) {
 	r := MarcRecord{}
 	var ctrl cField
 	var status string // for leader, position 5
+	var tnr string    // for error context on parse problems
 	for _, line := range lines {
 		if !strings.HasPrefix(line, "*") {
 			println("cannot parse this line", line)
@@ -57,6 +58,9 @@ func Parse(lines []string) (MarcRecord, error) {
 			if ctrl.Tag == "000" {
 				status = ctrl.Field
 			}
+			if ctrl.Tag == "001" {
+				tnr = ctrl.Field
+			}
 			r.CtrlFields = append(r.CtrlFields, ctrl)
 		} else {
 			tag := line[1:4]
@@ -69,7 +73,7 @@ func Parse(lines []string) (MarcRecord, error) {
 					continue
 				}
 				if !utf8.FullRuneInString(sf[0:1]) {
-					fmt.Printf("\nSkipping subfield (unparsable): %s\n", sf)
+					fmt.Printf("\n[tnr=%s] Skipping subfield (unparsable): %s%s\n", tnr, tag, sf)
 					continue
 				}
 				subFields = append(subFields, subField{sf[0:1], sf[1:len(sf)]})
